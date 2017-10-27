@@ -11,7 +11,7 @@ This template plugin includes:
 1. Make a subdirectory named after your plugin in the `data/plugins` subdirectory in your Grafana instance. It does not really matter what the directory name is. When the plugin is installed via the grafana cli, it will create a directory named after the plugin id field in the plugin.json file.
 
 1. Copy the files in this project into your new plugin subdirectory.
-2. `npm install` grunt-cli, grunt-contrib-clean, grunt-typescript, and grunt-contrib-watch
+2. `npm install` grunt, grunt-cli, load-grunt-tasks, grunt-contrib-clean, grunt-typescript, and grunt-contrib-watch
 
 `grunt watch` will build the TypeScript files and copy everything to the dist directory automatically when a file changes. This is useful for when working on the code. 
 

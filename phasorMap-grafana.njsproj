@@ -33,28 +33,41 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="LICENSE" />
     <Content Include="package.json" />
     <Content Include="README.md" />
-    <Content Include="src\module.html">
+    <Content Include="src\css\leaflet.css" />
+    <Content Include="src\partials\circle_options.html">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="src\plugin.json">
+    <Content Include="src\partials\editor.html">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="src\partials\module.html">
+      <SubType>Code</SubType>
+    </Content>
+    <None Include="src\plugin.json">
+      <SubType>Code</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Gruntfile.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="src\lib\leaflet.js" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="src\css\" />
+    <Folder Include="src\lib\" />
     <Folder Include="src\" />
+    <Folder Include="src\controllers\" />
+    <Folder Include="src\partials\" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="src\phasorMap_ctrl.ts">
+    <TypeScriptCompile Include="src\controllers\phasorMap_ctrl.js">
       <SubType>Code</SubType>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="src\module.ts">
+    <TypeScriptCompile Include="src\module.js">
       <SubType>Code</SubType>
     </TypeScriptCompile>
   </ItemGroup>

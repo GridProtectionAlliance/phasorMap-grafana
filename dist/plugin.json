@@ -1,0 +1,31 @@
+{
+  "type": "panel",
+  "name": "Phasor Map Panel",
+  "id": "gridprotectionalliance-phasormap-panel",
+  "info": {
+    "description": "Panel for displaying phasors on a map",
+    "author": {
+      "name": "Grid Protection Alliance",
+      "url": "http://www.gridprotectionalliance.org"
+    },
+    "keywords": [ "phasors", "panel" ],
+    "logos": {
+      "small": "",
+      "large": ""
+    },
+    "links": [
+      {
+        "name": "Project site",
+        "url": "https://github.com/GridProtectionAlliance/phasorMap-grafana"
+      }
+    ],
+    "screenshots": [
+    ],
+    "version": "1.0.0",
+    "updated": "2017-10-23"
+  },
+  "dependencies": {
+    "grafanaVersion": "4.6",
+    "plugins": []
+  }
+}

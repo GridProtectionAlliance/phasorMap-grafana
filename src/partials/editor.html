@@ -1,0 +1,48 @@
+﻿<div class="editor-row">
+    <div class="section gf-form-group">
+        <h5 class="section-heading">Map Options</h5>
+        <div class="gf-form">
+            <label class="gf-form-label width-10">Map Theme</label>
+            <div class="gf-form-select-wrapper max-width-14">
+                <select class="input-small gf-form-input" ng-model="ctrl.panel.mapBackground" ng-options="t for t in ctrl.panel.mapBackgrounds" ng-change="ctrl.changeMapBackground()"></select>
+            </div>
+        </div>
+        <div class="gf-form">
+            <label class="gf-form-label width-10">Zoom Level</label>
+            <div class="gf-form-select-wrapper max-width-14">
+                <select class="input-small gf-form-input" ng-model="ctrl.panel.zoomLevel"  ng-options="n for n in ctrl.getRange(ctrl.panel.minZoom, ctrl.panel.maxZoom, 1)" ng-change="ctrl.updateZoom()">
+                </select>
+            </div>
+        </div>
+        <div class="gf-form">
+            <label class="gf-form-label width-10">Lock Map</label>
+            <div class="gf-form-select-wrapper max-width-14">
+                <select class="input-small gf-form-input" ng-model="ctrl.panel.lockMap" ng-options="n for n in ['No', 'Yes']" ng-change="ctrl.lockMap()"></select>
+            </div>
+        </div>
+
+
+        <br/>
+        <h5 class="section-heading">Map Bounds</h5>
+        <div class="gf-form">
+            <label class="gf-form-label width-10">Max Latitude</label>
+            <input class="input-small gf-form-input" ng-model="ctrl.panel.maxLatitude" ng-change="ctrl.updateMapView()" />
+        </div>
+        <div class="gf-form">
+            <label class="gf-form-label width-10">Max Longitude</label>
+            <input class="input-small gf-form-input" ng-model="ctrl.panel.maxLongitude" ng-change="ctrl.updateMapView()" />
+        </div>
+        <div class="gf-form">
+            <label class="gf-form-label width-10">Min Latitude</label>
+            <input class="input-small gf-form-input" ng-model="ctrl.panel.minLatitude" ng-change="ctrl.updateMapView()" />
+        </div>
+        <div class="gf-form">
+            <label class="gf-form-label width-10">Min Longitude</label>
+            <input class="input-small gf-form-input" ng-model="ctrl.panel.minLongitude" ng-change="ctrl.updateMapView()" />
+        </div>
+        <div class="gf-form">
+            <button class="btn btn-primary" ng-click="ctrl.boundToMarkers()">Bound to Markers</button>
+        </div>
+
+    </div>
+</div>
