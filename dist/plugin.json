@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "grafanaVersion": "4.6",
+    "openHistorianPhasorDatasource": "1.0.1",
     "plugins": []
   }
 }

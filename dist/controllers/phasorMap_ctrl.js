@@ -1,9 +1,9 @@
 'use strict';
 
-System.register(['app/plugins/sdk', '../lib/leaflet', 'lodash', 'moment', '../css/leaflet.css!'], function (_export, _context) {
+System.register(['app/plugins/sdk', '../lib/leaflet', 'lodash', 'moment', '../css/leaflet.css!', './../js/constants'], function (_export, _context) {
     "use strict";
 
-    var MetricsPanelCtrl, L, _, moment, _createClass, tileServers, PhasorMapCtrl;
+    var MetricsPanelCtrl, L, _, moment, TileServers, _createClass, PhasorMapCtrl;
 
     function _classCallCheck(instance, Constructor) {
         if (!(instance instanceof Constructor)) {
@@ -44,7 +44,9 @@ System.register(['app/plugins/sdk', '../lib/leaflet', 'lodash', 'moment', '../cs
             _ = _lodash.default;
         }, function (_moment) {
             moment = _moment.default;
-        }, function (_cssLeafletCss) {}],
+        }, function (_cssLeafletCss) {}, function (_jsConstants) {
+            TileServers = _jsConstants.TileServers;
+        }],
         execute: function () {
             _createClass = function () {
                 function defineProperties(target, props) {
@@ -63,19 +65,6 @@ System.register(['app/plugins/sdk', '../lib/leaflet', 'lodash', 'moment', '../cs
                     return Constructor;
                 };
             }();
-
-            tileServers = {
-                'Mapnik': { url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', options: { maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy;' } },
-                'Black and White': { url: 'http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png', options: { maxZoom: 18, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy;' } },
-                'DE': { url: 'https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png', options: { maxZoom: 18, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy;' } },
-                'France': { url: 'https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', options: { maxZoom: 20, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy;' } },
-                'HOT': { url: 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', options: { maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy;' } },
-                'OpenTopoMap': { url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', options: { maxZoom: 17, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy;' } },
-                'Grayscale': { url: 'https://korona.geog.uni-heidelberg.de/tiles/roadsg/x={x}&y={y}&z={z}', options: { maxZoom: 19, attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>' } },
-                'Positron': { url: 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', options: { maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy;', subdomains: 'abcd' } },
-                'DarkMatter': { url: 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png', options: { maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy;', subdomains: 'abcd' } }
-
-            };
 
             _export('PhasorMapCtrl', PhasorMapCtrl = function (_MetricsPanelCtrl) {
                 _inherits(PhasorMapCtrl, _MetricsPanelCtrl);
@@ -96,11 +85,11 @@ System.register(['app/plugins/sdk', '../lib/leaflet', 'lodash', 'moment', '../cs
                     _this.events.on('refresh', _this.onRefresh.bind(_this));
 
                     // Variables for options
-                    _this.panel.mapBackgrounds = Object.keys(tileServers);
+                    _this.panel.mapBackgrounds = Object.keys(TileServers);
                     _this.panel.mapBackground = _this.panel.mapBackground != undefined ? _this.panel.mapBackground : _this.panel.mapBackgrounds[0];
-                    _this.panel.maxZoom = tileServers[_this.panel.mapBackground].options.maxZoom;
-                    _this.panel.minZoom = tileServers[_this.panel.mapBackground].options.minZoom != undefined ? tileServers[_this.panel.mapBackground].options.minZoom : 2;
-                    _this.panel.zoomLevel = _this.panel.zoomLevel != undefined ? _this.panel.zoomLevel : tileServers[_this.panel.mapBackground].options.maxZoom;
+                    _this.panel.maxZoom = TileServers[_this.panel.mapBackground].options.maxZoom;
+                    _this.panel.minZoom = TileServers[_this.panel.mapBackground].options.minZoom != undefined ? TileServers[_this.panel.mapBackground].options.minZoom : 2;
+                    _this.panel.zoomLevel = _this.panel.zoomLevel != undefined ? _this.panel.zoomLevel : TileServers[_this.panel.mapBackground].options.maxZoom;
                     _this.panel.lockMap = _this.panel.lockMap != undefined ? _this.panel.lockMap : 'No';
                     _this.panel.maxLongitude = _this.panel.maxLongitude != undefined ? _this.panel.maxLongitude : -125;
                     _this.panel.maxLatitude = _this.panel.maxLatitude != undefined ? _this.panel.maxLatitude : 24;
@@ -111,16 +100,13 @@ System.register(['app/plugins/sdk', '../lib/leaflet', 'lodash', 'moment', '../cs
                     _this.panel.referencePointTag = _this.panel.referencePointTag != undefined ? _this.panel.referencePointTag : '';
                     _this.panel.useAngleMean = _this.panel.useAngleMean != undefined ? _this.panel.useAngleMean : false;
                     _this.panel.angleMeanTimeWindow = _this.panel.angleMeanTimeWindow != undefined ? _this.panel.angleMeanTimeWindow : '5';
+                    _this.panel.showLegend = _this.panel.showLegend != undefined ? _this.panel.showLegend : false;
 
                     // Scope Variables
                     _this.$scope.tileLayer = null;
                     _this.$scope.mapContainer = null;
-                    _this.$scope.metaData = null;
-                    _this.$scope.magTags = [];
-                    _this.$scope.angleTags = [];
-                    _this.$scope.powerTags = [];
-                    _this.$scope.phasorPairs = {};
                     _this.$scope.circleMarkers = [];
+                    _this.$scope.data = [];
                     return _this;
                 }
                 // #endregion
@@ -138,8 +124,10 @@ System.register(['app/plugins/sdk', '../lib/leaflet', 'lodash', 'moment', '../cs
                 }, {
                     key: 'onPanelTeardown',
                     value: function onPanelTeardown() {
-                        this.map.off('zoomend');
-                        this.map.off('moveend');
+                        if (this.map) {
+                            this.map.off('zoomend');
+                            this.map.off('moveend');
+                        }
                         //console.log('panel-teardown');
                     }
                 }, {
@@ -172,13 +160,11 @@ System.register(['app/plugins/sdk', '../lib/leaflet', 'lodash', 'moment', '../cs
                     value: function onDataRecieved(data) {
                         var ctrl = this;
 
+                        ctrl.$scope.data = data;
+
                         ctrl.createMap();
 
-                        if (ctrl.$scope.metaData == null || ctrl.editMode) {
-                            ctrl.getMetadata(data);
-                        } else {
-                            ctrl.updateData(data);
-                        }
+                        ctrl.plotPhasorData(data);
                         //console.log('data-recieved');
                     }
                 }, {
@@ -205,9 +191,11 @@ System.register(['app/plugins/sdk', '../lib/leaflet', 'lodash', 'moment', '../cs
                             };
 
                             ctrl.$scope.mapContainer = L.map('mapid_' + ctrl.panel.id, mapOptions);
-                            ctrl.$scope.tileLayer = L.tileLayer(tileServers[ctrl.panel.mapBackground].url, tileServers[ctrl.panel.mapBackground].options);
+                            ctrl.$scope.tileLayer = L.tileLayer(TileServers[ctrl.panel.mapBackground].url, TileServers[ctrl.panel.mapBackground].options);
                             ctrl.$scope.tileLayer.addTo(ctrl.$scope.mapContainer);
                             ctrl.updateMapView();
+
+                            // setup map listeners
                             ctrl.$scope.mapContainer.off('zoomend');
                             ctrl.$scope.mapContainer.on('zoomend', function (event) {
                                 ctrl.panel.zoomLevel = ctrl.$scope.mapContainer.getZoom();
@@ -235,35 +223,11 @@ System.register(['app/plugins/sdk', '../lib/leaflet', 'lodash', 'moment', '../cs
                         }
                     }
                 }, {
-                    key: 'plotMetaData',
-                    value: function plotMetaData() {
-                        var ctrl = this;
-
-                        _.each(ctrl.$scope.circleMarkers, function (element, index, list) {
-                            element.remove();
-                        });
-
-                        _.each(ctrl.$scope.phasorPairs, function (element, index, list) {
-                            var r = parseInt(ctrl.panel.circleRadius.toString()) * 1.2;
-                            var divIcon = L.divIcon({
-                                html: '<canvas width="' + 2 * r + '" height="' + 2 * r + '" style="position:relative; top:-' + (r - 5) + 'px;left:-' + (r - 5) + 'px"></canvas>',
-                                iconSize: [12, 12]
-                            });
-                            var circle = L.marker([element.Latitude, element.Longitude], { icon: divIcon });
-                            ctrl.$scope.circleMarkers.push(circle);
-                            circle.addTo(ctrl.$scope.mapContainer);
-                            ctrl.$scope.phasorPairs[index].divIcon = circle._icon;
-                            ctrl.updatePhasorChart(index);
-                        });
-                    }
-                }, {
                     key: 'updatePhasorChart',
-                    value: function updatePhasorChart(phasorId) {
+                    value: function updatePhasorChart(div, data) {
                         var ctrl = this;
 
-                        var phasor = ctrl.$scope.phasorPairs[phasorId];
-
-                        var canvas = $(phasor.divIcon).children();
+                        var canvas = $(div).children();
                         var context = canvas[0].getContext("2d");
                         context.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -368,20 +332,20 @@ System.register(['app/plugins/sdk', '../lib/leaflet', 'lodash', 'moment', '../cs
                         function drawMagCircle(magnitude) {
                             context.strokeStyle = "#FFFF00";
                             context.beginPath();
-                            context.arc(center.x, center.y, chartRadius * (magnitude / 2000), 0, 2 * Math.PI);
+                            context.arc(center.x, center.y, chartRadius * (magnitude / 2), 0, 2 * Math.PI);
                             context.stroke();
                             context.fillStyle = "#FFFF00";
                             context.fill();
                         }
 
-                        function drawAverageLine(angle) {
+                        function drawLine(angle, color) {
                             angle = angle - 90;
                             var radians = angle * (Math.PI / 180);
 
                             var x = chartRadius * Math.cos(radians) + center.x;
                             var y = chartRadius * Math.sin(radians) + center.y;
 
-                            context.strokeStyle = "#FF0000";
+                            context.strokeStyle = color;
                             context.beginPath();
                             context.moveTo(center.x, center.y);
                             context.lineTo(x, y);
@@ -390,101 +354,33 @@ System.register(['app/plugins/sdk', '../lib/leaflet', 'lodash', 'moment', '../cs
 
                         drawBackground();
                         drawGrid();
-                        drawMagCircle(phasor.MagnitudeValue);
+                        drawMagCircle(data.magvalue);
 
-                        drawAngleArrow(phasor.AngleValue);
-                        if (phasor.angleMean) drawAverageLine(phasor.angleMean);
+                        drawAngleArrow(data.anglevalue);
+                        drawLine(data.minanglevalue, "#FF0000");
+                        drawLine(data.maxanglevalue, "#FF0000");
+                        //if (phasor.angleMean)
+                        //    drawAverageLine(phasor.angleMean);
                     }
                 }, {
-                    key: 'getMetadata',
-                    value: function getMetadata(data) {
+                    key: 'plotPhasorData',
+                    value: function plotPhasorData(data) {
                         var ctrl = this;
-                        if (ctrl.datasource.getMetaData == undefined) return;
-                        ctrl.$scope.phasorPairs = {};
-                        $('canvas').remove();
-                        ctrl.datasource.getMetaData(data.map(function (x) {
-                            return "'" + x.pointtag + "'";
-                        }).join(',')).then(function (d) {
-                            if (d.data == "") return;
-                            ctrl.$scope.metaData = JSON.parse(d.data);
-                            _.each(ctrl.$scope.metaData, function (element, index, list) {
-                                if (element.PhasorID == null) return;
 
-                                if (!ctrl.$scope.phasorPairs.hasOwnProperty(element.PhasorID)) ctrl.$scope.phasorPairs[element.PhasorID] = {};
-
-                                ctrl.$scope.phasorPairs[element.PhasorID].PhasorType = element.PhasorType;
-                                ctrl.$scope.phasorPairs[element.PhasorID].Latitude = element.Latitude;
-                                ctrl.$scope.phasorPairs[element.PhasorID].Longitude = element.Longitude;
-
-                                if (element.SignalType.indexOf('PHM') >= 0) {
-                                    ctrl.$scope.phasorPairs[element.PhasorID].MagnitudeTag = element.PointTag;
-                                    ctrl.$scope.phasorPairs[element.PhasorID].MagnitudeValue = 0;
-                                } else if (element.SignalType.indexOf('PHA') >= 0) {
-                                    ctrl.$scope.phasorPairs[element.PhasorID].AngleTag = element.PointTag;
-                                    ctrl.$scope.phasorPairs[element.PhasorID].AngleValue = 0;
-                                }
-                            });
-
-                            ctrl.plotMetaData();
-
-                            ctrl.updateData(data);
+                        _.each(ctrl.$scope.circleMarkers, function (element, index, list) {
+                            element.remove();
                         });
-                    }
-                }, {
-                    key: 'updateData',
-                    value: function updateData(data) {
-                        var ctrl = this;
-                        var refpoints = null;
-
-                        var refAngle = 0;
-                        if (ctrl.panel.useReferenceValue) {
-                            var tag = _.find(data, function (o) {
-                                return o.pointtag == ctrl.panel.referencePointTag.AngleTag;
-                            });
-                            refAngle = tag.datapoints[tag.datapoints.length - 1][0];
-
-                            if (ctrl.panel.useAngleMean) {
-                                var timeWindow = ctrl.panel.angleMeanTimeWindow * 60 * 1000;
-                                var lastTime = tag.datapoints[tag.datapoints.length - 1][1];
-                                var firstTime = lastTime - timeWindow;
-
-                                refpoints = _.filter(tag.datapoints, function (v) {
-                                    return v[1] > firstTime;
-                                });
-                            }
-                        }
 
                         _.each(data, function (element, index, list) {
-                            var phasorId = _.find(ctrl.$scope.metaData, function (o) {
-                                return element.pointtag == o.PointTag;
-                            }).PhasorID;
-
-                            if (element.pointtag == ctrl.$scope.phasorPairs[phasorId].MagnitudeTag && element.datapoints.length > 0) {
-                                ctrl.$scope.phasorPairs[phasorId].MagnitudeValue = element.datapoints[element.datapoints.length - 1][0];
-                            } else if (element.pointtag == ctrl.$scope.phasorPairs[phasorId].AngleTag && element.datapoints.length > 0) {
-                                ctrl.$scope.phasorPairs[phasorId].AngleValue = element.datapoints[element.datapoints.length - 1][0] - refAngle;
-
-                                if (ctrl.panel.useAngleMean) {
-                                    var timeWindow = ctrl.panel.angleMeanTimeWindow * 60 * 1000;
-                                    var i = element.datapoints.length - 1;
-                                    var lastTime = element.datapoints[i][1];
-                                    var firstTime = lastTime - timeWindow;
-
-                                    var anglepoints = _.filter(element.datapoints, function (v) {
-                                        return v[1] > firstTime;
-                                    });
-
-                                    _.each(anglepoints, function (e, j, l) {
-                                        if (ctrl.panel.useReferenceValue && e[1] == refpoints[j][1]) e = e - refpoints[i][1];
-                                    });
-
-                                    ctrl.$scope.phasorPairs[phasorId].angleMean = _.mean(_.map(anglepoints, function (o) {
-                                        return o[0];
-                                    }));
-                                } else ctrl.$scope.phasorPairs[phasorId].angleMean = null;
-                            }
-
-                            ctrl.updatePhasorChart(phasorId);
+                            var r = parseInt(ctrl.panel.circleRadius.toString()) * 1.2;
+                            var divIcon = L.divIcon({
+                                html: '<canvas width="' + 2 * r + '" height="' + 2 * r + '" style="position:relative; top:-' + (r - 5) + 'px;left:-' + (r - 5) + 'px"></canvas>',
+                                iconSize: [12, 12]
+                            });
+                            var circle = L.marker([element.latitude, element.longitude], { icon: divIcon });
+                            ctrl.$scope.circleMarkers.push(circle);
+                            circle.addTo(ctrl.$scope.mapContainer);
+                            ctrl.updatePhasorChart(circle._icon, element);
                         });
                     }
                 }, {
@@ -493,7 +389,7 @@ System.register(['app/plugins/sdk', '../lib/leaflet', 'lodash', 'moment', '../cs
                         var ctrl = this;
 
                         ctrl.$scope.tileLayer.remove();
-                        ctrl.$scope.tileLayer = L.tileLayer(tileServers[this.panel.mapBackground].url, tileServers[this.panel.mapBackground].options);
+                        ctrl.$scope.tileLayer = L.tileLayer(TileServers[this.panel.mapBackground].url, TileServers[this.panel.mapBackground].options);
                         ctrl.$scope.tileLayer.addTo(this.$scope.mapContainer);
                     }
                 }, {
@@ -521,7 +417,6 @@ System.register(['app/plugins/sdk', '../lib/leaflet', 'lodash', 'moment', '../cs
                         ctrl.$scope.mapContainer.remove();
                         ctrl.$scope.mapContainer = null;
                         ctrl.createMap();
-                        ctrl.plotMetaData();
                     }
                 }, {
                     key: 'boundToMarkers',
@@ -546,6 +441,11 @@ System.register(['app/plugins/sdk', '../lib/leaflet', 'lodash', 'moment', '../cs
                             input.push(i);
                         }
                         return input;
+                    }
+                }, {
+                    key: 'fixAngle',
+                    value: function fixAngle(angle) {
+                        if (angle > -180 && angle <= 180) return angle;else if (angle <= -180) return 360 + angle;else if (angle > 180) return angle - 360;
                     }
                 }]);
 

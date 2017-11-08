@@ -26,21 +26,7 @@ import * as L from '../lib/leaflet';
 import _ from 'lodash';
 import moment from 'moment';
 import '../css/leaflet.css!';
-
-// #region Constant Variables
-const tileServers = {
-    'Mapnik': { url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', options: { maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy;' } },
-    'Black and White': { url: 'http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png', options: { maxZoom: 18, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy;' } },
-    'DE': { url: 'https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png', options: { maxZoom: 18, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy;' } },
-    'France': { url: 'https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', options: { maxZoom: 20, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy;' } },
-    'HOT': { url: 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', options: { maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy;' } },
-    'OpenTopoMap': { url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', options: { maxZoom: 17, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy;' } },
-    'Grayscale': { url: 'https://korona.geog.uni-heidelberg.de/tiles/roadsg/x={x}&y={y}&z={z}', options: { maxZoom: 19, attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>' } },
-    'Positron': { url: 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', options: { maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy;', subdomains: 'abcd' } },
-    'DarkMatter': { url: 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png', options: { maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy;', subdomains: 'abcd' } },
-
-};
-// #endregion
+import { TileServers } from './../js/constants';
 
 export class PhasorMapCtrl extends MetricsPanelCtrl{
     // #region Constructor
@@ -57,11 +43,11 @@ export class PhasorMapCtrl extends MetricsPanelCtrl{
         this.events.on('refresh', this.onRefresh.bind(this));
         
         // Variables for options
-        this.panel.mapBackgrounds = Object.keys(tileServers);
+        this.panel.mapBackgrounds = Object.keys(TileServers);
         this.panel.mapBackground  = (this.panel.mapBackground != undefined ? this.panel.mapBackground : this.panel.mapBackgrounds[0]);
-        this.panel.maxZoom        = tileServers[this.panel.mapBackground].options.maxZoom;
-        this.panel.minZoom =        (tileServers[this.panel.mapBackground].options.minZoom != undefined ? tileServers[this.panel.mapBackground].options.minZoom : 2)
-        this.panel.zoomLevel =      (this.panel.zoomLevel       != undefined ? this.panel.zoomLevel     : tileServers[this.panel.mapBackground].options.maxZoom);
+        this.panel.maxZoom        = TileServers[this.panel.mapBackground].options.maxZoom;
+        this.panel.minZoom =        (TileServers[this.panel.mapBackground].options.minZoom != undefined ? TileServers[this.panel.mapBackground].options.minZoom : 2)
+        this.panel.zoomLevel =      (this.panel.zoomLevel       != undefined ? this.panel.zoomLevel     : TileServers[this.panel.mapBackground].options.maxZoom);
         this.panel.lockMap =        (this.panel.lockMap         != undefined ? this.panel.lockMap       : 'No'  );
         this.panel.maxLongitude =   (this.panel.maxLongitude    != undefined ? this.panel.maxLongitude  : -125  );
         this.panel.maxLatitude =    (this.panel.maxLatitude     != undefined ? this.panel.maxLatitude   : 24    );
@@ -72,16 +58,13 @@ export class PhasorMapCtrl extends MetricsPanelCtrl{
         this.panel.referencePointTag = (this.panel.referencePointTag != undefined ? this.panel.referencePointTag : '');  
         this.panel.useAngleMean = (this.panel.useAngleMean != undefined ? this.panel.useAngleMean : false);
         this.panel.angleMeanTimeWindow = (this.panel.angleMeanTimeWindow != undefined ? this.panel.angleMeanTimeWindow : '5');
+        this.panel.showLegend = (this.panel.showLegend != undefined ? this.panel.showLegend : false);
 
         // Scope Variables
         this.$scope.tileLayer = null;
         this.$scope.mapContainer = null;
-        this.$scope.metaData = null;
-        this.$scope.magTags = [];
-        this.$scope.angleTags = [];
-        this.$scope.powerTags = [];
-        this.$scope.phasorPairs = {};
         this.$scope.circleMarkers = [];
+        this.$scope.data = [];
     }
     // #endregion
 
@@ -93,8 +76,10 @@ export class PhasorMapCtrl extends MetricsPanelCtrl{
     }
 
     onPanelTeardown() {
-        this.map.off('zoomend');
-        this.map.off('moveend');
+        if (this.map) {
+            this.map.off('zoomend');
+            this.map.off('moveend');
+        }
         //console.log('panel-teardown');
     }
 
@@ -122,14 +107,11 @@ export class PhasorMapCtrl extends MetricsPanelCtrl{
     onDataRecieved(data) {
         var ctrl = this;
 
-        ctrl.createMap()
+        ctrl.$scope.data = data;
 
-        if (ctrl.$scope.metaData == null || ctrl.editMode) {
-            ctrl.getMetadata(data);
-        }
-        else {
-            ctrl.updateData(data);
-        }
+        ctrl.createMap();
+
+        ctrl.plotPhasorData(data);
         //console.log('data-recieved');
     }
 
@@ -156,9 +138,11 @@ export class PhasorMapCtrl extends MetricsPanelCtrl{
             };
 
             ctrl.$scope.mapContainer = L.map('mapid_' + ctrl.panel.id, mapOptions);
-            ctrl.$scope.tileLayer = L.tileLayer(tileServers[ctrl.panel.mapBackground].url, tileServers[ctrl.panel.mapBackground].options);
+            ctrl.$scope.tileLayer = L.tileLayer(TileServers[ctrl.panel.mapBackground].url, TileServers[ctrl.panel.mapBackground].options);
             ctrl.$scope.tileLayer.addTo(ctrl.$scope.mapContainer);
             ctrl.updateMapView();
+
+            // setup map listeners
             ctrl.$scope.mapContainer.off('zoomend');
             ctrl.$scope.mapContainer.on('zoomend', function (event) {
                 ctrl.panel.zoomLevel = ctrl.$scope.mapContainer.getZoom();
@@ -187,33 +171,10 @@ export class PhasorMapCtrl extends MetricsPanelCtrl{
         }
     }
 
-    plotMetaData() {
+    updatePhasorChart(div, data) {
         var ctrl = this;
 
-        _.each(ctrl.$scope.circleMarkers, function (element, index, list) {
-            element.remove();
-        });
-
-        _.each(ctrl.$scope.phasorPairs, function (element, index, list) {
-            var r = parseInt(ctrl.panel.circleRadius.toString()) * 1.2;
-            var divIcon = L.divIcon({
-                html: '<canvas width="' + 2 * r + '" height="' + 2 * r + '" style="position:relative; top:-' + (r - 5) + 'px;left:-' + (r - 5) + 'px"></canvas>',
-                iconSize: [12, 12]
-            });
-            var circle = L.marker([element.Latitude, element.Longitude], { icon: divIcon });
-            ctrl.$scope.circleMarkers.push(circle);
-            circle.addTo(ctrl.$scope.mapContainer);
-            ctrl.$scope.phasorPairs[index].divIcon = circle._icon;
-            ctrl.updatePhasorChart(index);
-        });
-    }
-
-    updatePhasorChart(phasorId) {
-        var ctrl = this;
-
-        var phasor = ctrl.$scope.phasorPairs[phasorId];
-
-        var canvas = $(phasor.divIcon).children();
+        var canvas = $(div).children();
         var context = canvas[0].getContext("2d");
         context.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -327,21 +288,21 @@ export class PhasorMapCtrl extends MetricsPanelCtrl{
         function drawMagCircle(magnitude) {
             context.strokeStyle = "#FFFF00";
             context.beginPath();
-            context.arc(center.x, center.y, chartRadius*(magnitude/2000), 0, 2 * Math.PI);
+            context.arc(center.x, center.y, chartRadius*(magnitude/2), 0, 2 * Math.PI);
             context.stroke();
             context.fillStyle = "#FFFF00";
             context.fill();
 
         }
 
-        function drawAverageLine(angle) {
+        function drawLine(angle, color) {
             angle = angle - 90;
             var radians = angle * (Math.PI / 180);
 
             var x = chartRadius * Math.cos(radians) + center.x;
             var y = chartRadius * Math.sin(radians) + center.y;
 
-            context.strokeStyle = "#FF0000";
+            context.strokeStyle = color;
             context.beginPath();
             context.moveTo(center.x, center.y);
             context.lineTo(x, y);
@@ -351,113 +312,37 @@ export class PhasorMapCtrl extends MetricsPanelCtrl{
 
         drawBackground();
         drawGrid();
-        drawMagCircle(phasor.MagnitudeValue);
+        drawMagCircle(data.magvalue);
 
-        drawAngleArrow(phasor.AngleValue);
-        if (phasor.angleMean)
-            drawAverageLine(phasor.angleMean);
+        drawAngleArrow(data.anglevalue);
+        drawLine(data.minanglevalue, "#FF0000")
+        drawLine(data.maxanglevalue, "#FF0000")
+        //if (phasor.angleMean)
+        //    drawAverageLine(phasor.angleMean);
     }
 
     // #endregion
 
     // #region Data
-    getMetadata(data) {
+    plotPhasorData(data) {
         var ctrl = this;
-        if (ctrl.datasource.getMetaData == undefined) return;
-        ctrl.$scope.phasorPairs = {};
-        $('canvas').remove();
-        ctrl.datasource.getMetaData(data.map(x => { return "'" + x.pointtag + "'" }).join(',')).then(function (d) {
-            if (d.data == "") return;
-            ctrl.$scope.metaData = JSON.parse(d.data);
-            _.each(ctrl.$scope.metaData, function (element, index, list) {
-                if (element.PhasorID == null) return;
 
-                if (!ctrl.$scope.phasorPairs.hasOwnProperty(element.PhasorID))
-                    ctrl.$scope.phasorPairs[element.PhasorID] = {};
-
-                ctrl.$scope.phasorPairs[element.PhasorID].PhasorType = element.PhasorType;
-                ctrl.$scope.phasorPairs[element.PhasorID].Latitude = element.Latitude;
-                ctrl.$scope.phasorPairs[element.PhasorID].Longitude = element.Longitude;
-
-
-                if (element.SignalType.indexOf('PHM') >= 0) {
-                    ctrl.$scope.phasorPairs[element.PhasorID].MagnitudeTag = element.PointTag;
-                    ctrl.$scope.phasorPairs[element.PhasorID].MagnitudeValue = 0;
-                }
-                else if (element.SignalType.indexOf('PHA') >= 0) {
-                    ctrl.$scope.phasorPairs[element.PhasorID].AngleTag = element.PointTag;
-                    ctrl.$scope.phasorPairs[element.PhasorID].AngleValue = 0;
-                }
-
-
-            });
-
-            ctrl.plotMetaData();
-
-            ctrl.updateData(data);
+        _.each(ctrl.$scope.circleMarkers, function (element, index, list) {
+            element.remove();
         });
-
-    }
-
-    updateData(data) {
-        var ctrl = this;
-        var refpoints = null;
-
-        var refAngle = 0;
-        if (ctrl.panel.useReferenceValue) {
-            var tag = _.find(data, function (o) { return o.pointtag == ctrl.panel.referencePointTag.AngleTag });
-            refAngle = tag.datapoints[tag.datapoints.length - 1][0];
-
-            if (ctrl.panel.useAngleMean) {
-                var timeWindow = ctrl.panel.angleMeanTimeWindow * 60 * 1000;
-                var lastTime = tag.datapoints[tag.datapoints.length-1][1];
-                var firstTime = lastTime - timeWindow;
-
-                refpoints = _.filter(tag.datapoints, function (v) { return v[1] > firstTime });
-            }
-
-        }
-
-        
-
 
         _.each(data, function (element, index, list) {
-            var phasorId = _.find(ctrl.$scope.metaData, function (o) {
-                return element.pointtag == o.PointTag
-            }).PhasorID;
-
-
-            if (element.pointtag == ctrl.$scope.phasorPairs[phasorId].MagnitudeTag && element.datapoints.length > 0) {
-                ctrl.$scope.phasorPairs[phasorId].MagnitudeValue = element.datapoints[element.datapoints.length - 1][0];
-            }
-            else if (element.pointtag == ctrl.$scope.phasorPairs[phasorId].AngleTag && element.datapoints.length > 0) {
-                ctrl.$scope.phasorPairs[phasorId].AngleValue = element.datapoints[element.datapoints.length - 1][0] - refAngle;
-
-                if (ctrl.panel.useAngleMean) {
-                    var timeWindow = ctrl.panel.angleMeanTimeWindow * 60 * 1000;
-                    var i = element.datapoints.length - 1;
-                    var lastTime = element.datapoints[i][1];
-                    var firstTime = lastTime - timeWindow;
-
-                    var anglepoints = _.filter(element.datapoints, function (v) { return v[1] > firstTime });
-
-                    _.each(anglepoints, function (e, j, l) {
-                        if (ctrl.panel.useReferenceValue && e[1] == refpoints[j][1])
-                            e = e - refpoints[i][1];
-                    });
-
-                    ctrl.$scope.phasorPairs[phasorId].angleMean = _.mean(_.map(anglepoints, function (o) { return o[0];}));
-                }
-                else
-                    ctrl.$scope.phasorPairs[phasorId].angleMean = null;
-            }
-
-
-            ctrl.updatePhasorChart(phasorId);
-
+            var r = parseInt(ctrl.panel.circleRadius.toString()) * 1.2;
+            var divIcon = L.divIcon({
+                html: '<canvas width="' + 2 * r + '" height="' + 2 * r + '" style="position:relative; top:-' + (r - 5) + 'px;left:-' + (r - 5) + 'px"></canvas>',
+                iconSize: [12, 12]
+            });
+            var circle = L.marker([element.latitude, element.longitude], { icon: divIcon });
+            ctrl.$scope.circleMarkers.push(circle);
+            circle.addTo(ctrl.$scope.mapContainer);
+            ctrl.updatePhasorChart(circle._icon, element);
         });
 
-        
     }
 
     // #endregion
@@ -467,7 +352,7 @@ export class PhasorMapCtrl extends MetricsPanelCtrl{
         var ctrl = this;
 
         ctrl.$scope.tileLayer.remove();
-        ctrl.$scope.tileLayer = L.tileLayer(tileServers[this.panel.mapBackground].url, tileServers[this.panel.mapBackground].options);
+        ctrl.$scope.tileLayer = L.tileLayer(TileServers[this.panel.mapBackground].url, TileServers[this.panel.mapBackground].options);
         ctrl.$scope.tileLayer.addTo(this.$scope.mapContainer);
     }
 
@@ -495,7 +380,6 @@ export class PhasorMapCtrl extends MetricsPanelCtrl{
         ctrl.$scope.mapContainer.remove();
         ctrl.$scope.mapContainer = null;
         ctrl.createMap();
-        ctrl.plotMetaData();
     }
 
     boundToMarkers() {
@@ -523,8 +407,12 @@ export class PhasorMapCtrl extends MetricsPanelCtrl{
         return input;
     }
     // #endregion
-    
 
+    fixAngle(angle) {
+        if (angle > -180 && angle <= 180) return angle;
+        else if (angle <= -180) return 360 + angle;
+        else if (angle > 180) return angle - 360;
+    }
 }
 
 PhasorMapCtrl.templateUrl = 'partials/module.html';

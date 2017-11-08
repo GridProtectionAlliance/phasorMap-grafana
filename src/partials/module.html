@@ -1,1 +1,20 @@
 ﻿<div id="mapid_{{ctrl.panel.id}}" class="mapcontainer" ng-style="{height: ctrl.height}"></div>
+<div id="maplegend_{{ctrl.panel.id}}" class="graph-legend-wrapper" ng-if="ctrl.panel.showLegend">
+    <table style="width:100%">
+        <tr>
+            <td>Site</td>
+            <td>Magnitude</td>
+            <td>Angle</td>
+            <td>Max Angle</td>
+            <td>Min Angle</td>
+        </tr>
+        <tr ng-repeat="x in data">
+            <td>{{x.target}}</td>
+            <td>{{x.magvalue.toFixed(2)}}</td>
+            <td>{{ctrl.fixAngle(x.anglevalue).toFixed(2)}}</td>
+            <td>{{ctrl.fixAngle(x.maxanglevalue).toFixed(2)}}</td>
+            <td>{{ctrl.fixAngle(x.minanglevalue).toFixed(2)}}</td>
+
+        </tr>
+    </table>
+</div>

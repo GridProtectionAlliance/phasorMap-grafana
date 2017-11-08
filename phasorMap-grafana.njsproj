@@ -54,6 +54,9 @@
     <Compile Include="Gruntfile.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="src\js\constants.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\lib\leaflet.js" />
   </ItemGroup>
   <ItemGroup>
@@ -61,6 +64,7 @@
     <Folder Include="src\lib\" />
     <Folder Include="src\" />
     <Folder Include="src\controllers\" />
+    <Folder Include="src\js\" />
     <Folder Include="src\partials\" />
   </ItemGroup>
   <ItemGroup>

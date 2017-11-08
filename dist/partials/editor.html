@@ -1,5 +1,32 @@
 ﻿<div class="editor-row">
     <div class="section gf-form-group">
+        <h5 class="section-heading">Legend</h5>
+        <gf-form-switch class="gf-form" label-class="width-12" switch-class="max-width-6" label="Show Legend" checked="ctrl.panel.showLegend"></gf-form-switch>
+
+        <br />
+        <h5 class="section-heading">Circle Options</h5>
+        <div class="gf-form">
+            <label class="gf-form-label width-12">Circle Radius</label>
+            <input class="input-small gf-form-input" ng-model="ctrl.panel.circleRadius" ng-change="ctrl.changeCircleRadius()" />
+        </div>
+
+        <br />
+        <h5 class="section-heading">Data Options</h5>
+        <gf-form-switch class="gf-form" label-class="width-12" switch-class="max-width-6" label="Use Reference Point" checked="ctrl.panel.useReferenceValue"></gf-form-switch>
+        <div class="gf-form" ng-show="ctrl.panel.useReferenceValue">
+            <label class="gf-form-label width-12">Refrence Point</label>
+            <select class="input-small gf-form-input" ng-model="ctrl.panel.referencePointTag" ng-options="value as value.AngleTag for (key, value) in ctrl.$scope.phasorPairs"></select>
+        </div>
+
+        <gf-form-switch class="gf-form" label-class="width-12" switch-class="max-width-6" label="Calculate Angle Mean" checked="ctrl.panel.useAngleMean"></gf-form-switch>
+        <div class="gf-form" ng-show="ctrl.panel.useAngleMean">
+            <label class="gf-form-label width-12">Time Window (min)</label>
+            <select class="input-small gf-form-input" ng-model="ctrl.panel.angleMeanTimeWindow" ng-options="t for t in ctrl.getRange(1, 10, 1)"></select>
+        </div>
+
+    </div>
+
+    <div class="section gf-form-group">
         <h5 class="section-heading">Map Options</h5>
         <div class="gf-form">
             <label class="gf-form-label width-10">Map Theme</label>
@@ -20,10 +47,12 @@
                 <select class="input-small gf-form-input" ng-model="ctrl.panel.lockMap" ng-options="n for n in ['No', 'Yes']" ng-change="ctrl.lockMap()"></select>
             </div>
         </div>
+    </div>
 
-
-        <br/>
+    <div class="section gf-form-group">
         <h5 class="section-heading">Map Bounds</h5>
+        <button class="btn btn-primary" ng-click="ctrl.boundToMarkers()">Set to Markers</button>
+
         <div class="gf-form">
             <label class="gf-form-label width-10">Max Latitude</label>
             <input class="input-small gf-form-input" ng-model="ctrl.panel.maxLatitude" ng-change="ctrl.updateMapView()" />
@@ -40,9 +69,7 @@
             <label class="gf-form-label width-10">Min Longitude</label>
             <input class="input-small gf-form-input" ng-model="ctrl.panel.minLongitude" ng-change="ctrl.updateMapView()" />
         </div>
-        <div class="gf-form">
-            <button class="btn btn-primary" ng-click="ctrl.boundToMarkers()">Bound to Markers</button>
-        </div>
-
     </div>
+
+
 </div>
