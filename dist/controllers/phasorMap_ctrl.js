@@ -1,9 +1,9 @@
 'use strict';
 
-System.register(['app/plugins/sdk', '../lib/leaflet', 'lodash', 'moment', '../css/leaflet.css!', './../js/constants'], function (_export, _context) {
+System.register(['app/plugins/sdk', 'lodash', 'moment', '../css/leaflet.css!', './../js/constants'], function (_export, _context) {
     "use strict";
 
-    var MetricsPanelCtrl, L, _, moment, TileServers, _createClass, PhasorMapCtrl;
+    var MetricsPanelCtrl, _, moment, TileServers, _createClass, PhasorMapCtrl;
 
     function _classCallCheck(instance, Constructor) {
         if (!(instance instanceof Constructor)) {
@@ -38,8 +38,6 @@ System.register(['app/plugins/sdk', '../lib/leaflet', 'lodash', 'moment', '../cs
     return {
         setters: [function (_appPluginsSdk) {
             MetricsPanelCtrl = _appPluginsSdk.MetricsPanelCtrl;
-        }, function (_libLeaflet) {
-            L = _libLeaflet;
         }, function (_lodash) {
             _ = _lodash.default;
         }, function (_moment) {
@@ -118,7 +116,6 @@ System.register(['app/plugins/sdk', '../lib/leaflet', 'lodash', 'moment', '../cs
                     key: 'onInitEditMode',
                     value: function onInitEditMode() {
                         this.addEditorTab('Options', 'public/plugins/gridprotectionalliance-phasormap-panel/partials/editor.html', 2);
-                        this.addEditorTab('Circles', 'public/plugins/gridprotectionalliance-phasormap-panel/partials/circle_options.html', 3);
                         //console.log('init-edit-mode');
                     }
                 }, {
@@ -371,6 +368,8 @@ System.register(['app/plugins/sdk', '../lib/leaflet', 'lodash', 'moment', '../cs
                             element.remove();
                         });
 
+                        ctrl.$scope.circleMarkers = [];
+
                         _.each(data, function (element, index, list) {
                             var r = parseInt(ctrl.panel.circleRadius.toString()) * 1.2;
                             var divIcon = L.divIcon({
@@ -381,6 +380,20 @@ System.register(['app/plugins/sdk', '../lib/leaflet', 'lodash', 'moment', '../cs
                             ctrl.$scope.circleMarkers.push(circle);
                             circle.addTo(ctrl.$scope.mapContainer);
                             ctrl.updatePhasorChart(circle._icon, element);
+
+                            if (element.tolongitude != "" && element.tolatitude != "") {
+                                var line;
+                                if (element.powervalue >= 0) line = L.polyline([[element.latitude, element.longitude], [element.tolatitude, element.tolongitude]], { color: 'red' });else line = L.polyline([[element.tolatitude, element.tolongitude], [element.latitude, element.longitude]], { color: 'red' });
+
+                                var decorator = L.polylineDecorator(line, {
+                                    patterns: [{ offset: '60%', repeat: 0, symbol: L.Symbol.arrowHead({ pixelSize: 15, pathOptions: { color: 'red', fillOpacity: 1, weight: 0 } }) }]
+                                });
+                                ctrl.$scope.circleMarkers.push(line);
+                                ctrl.$scope.circleMarkers.push(decorator);
+
+                                line.addTo(ctrl.$scope.mapContainer);
+                                decorator.addTo(ctrl.$scope.mapContainer);
+                            }
                         });
                     }
                 }, {

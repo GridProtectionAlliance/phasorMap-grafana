@@ -37,7 +37,7 @@
     <Content Include="package.json" />
     <Content Include="README.md" />
     <Content Include="src\css\leaflet.css" />
-    <Content Include="src\partials\circle_options.html">
+    <Content Include="src\lib\leaflet.polylineDecorator.js">
       <SubType>Code</SubType>
     </Content>
     <Content Include="src\partials\editor.html">

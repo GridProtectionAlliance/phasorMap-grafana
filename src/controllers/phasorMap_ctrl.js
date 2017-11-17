@@ -22,7 +22,8 @@
 //******************************************************************************************************
 
 import { MetricsPanelCtrl } from 'app/plugins/sdk'
-import * as L from '../lib/leaflet';
+//import * as L from '../lib/leaflet';
+//import * as pD from '../lib/leaflet.polylineDecorator.js';
 import _ from 'lodash';
 import moment from 'moment';
 import '../css/leaflet.css!';
@@ -71,7 +72,6 @@ export class PhasorMapCtrl extends MetricsPanelCtrl{
     // #region Events from Graphana Handlers
     onInitEditMode() {
         this.addEditorTab('Options', 'public/plugins/gridprotectionalliance-phasormap-panel/partials/editor.html', 2);
-        this.addEditorTab('Circles', 'public/plugins/gridprotectionalliance-phasormap-panel/partials/circle_options.html', 3);
         //console.log('init-edit-mode');
     }
 
@@ -331,6 +331,8 @@ export class PhasorMapCtrl extends MetricsPanelCtrl{
             element.remove();
         });
 
+        ctrl.$scope.circleMarkers = [];
+
         _.each(data, function (element, index, list) {
             var r = parseInt(ctrl.panel.circleRadius.toString()) * 1.2;
             var divIcon = L.divIcon({
@@ -341,6 +343,25 @@ export class PhasorMapCtrl extends MetricsPanelCtrl{
             ctrl.$scope.circleMarkers.push(circle);
             circle.addTo(ctrl.$scope.mapContainer);
             ctrl.updatePhasorChart(circle._icon, element);
+
+            if (element.tolongitude != "" && element.tolatitude != "") {
+                var line;
+                if(element.powervalue >= 0)
+                    line = L.polyline([[element.latitude, element.longitude], [element.tolatitude, element.tolongitude]], { color: 'red' });
+                else
+                    line = L.polyline([[element.tolatitude, element.tolongitude], [element.latitude, element.longitude]], { color: 'red' });
+
+                var decorator = L.polylineDecorator(line, {
+                    patterns: [
+                        { offset: '60%', repeat: 0, symbol: L.Symbol.arrowHead({ pixelSize: 15, pathOptions: { color: 'red', fillOpacity: 1, weight: 0 } }) }
+                    ]
+                })
+                ctrl.$scope.circleMarkers.push(line);
+                ctrl.$scope.circleMarkers.push(decorator);
+
+                line.addTo(ctrl.$scope.mapContainer);
+                decorator.addTo(ctrl.$scope.mapContainer);
+            }
         });
 
     }
