@@ -94,6 +94,12 @@ System.register(['app/plugins/sdk', 'lodash', 'moment', '../css/leaflet.css!', '
                     _this.panel.minLatitude = _this.panel.minLatitude != undefined ? _this.panel.minLatitude : 50;
                     _this.panel.minLongitude = _this.panel.minLongitude != undefined ? _this.panel.minLongitude : -66;
                     _this.panel.circleRadius = _this.panel.circleRadius != undefined ? _this.panel.circleRadius : 50;
+                    _this.panel.angleMarkerWidth = _this.panel.angleMarkerWidth != undefined ? _this.panel.angleMarkerWidth : 5;
+                    _this.panel.minAngleMarkerWidth = _this.panel.minAngleMarkerWidth != undefined ? _this.panel.minAngleMarkerWidth : 1;
+                    _this.panel.maxAngleMarkerWidth = _this.panel.maxAngleMarkerWidth != undefined ? _this.panel.maxAngleMarkerWidth : 1;
+                    _this.panel.showMinAngle = _this.panel.showMinAngle != undefined ? _this.panel.showMinAngle : true;
+                    _this.panel.showMaxAngle = _this.panel.showMaxAngle != undefined ? _this.panel.showMaxAngle : true;
+
                     _this.panel.useReferenceValue = _this.panel.useReferenceValue != undefined ? _this.panel.useReferenceValue : false;
                     _this.panel.referencePointTag = _this.panel.referencePointTag != undefined ? _this.panel.referencePointTag : '';
                     _this.panel.useAngleMean = _this.panel.useAngleMean != undefined ? _this.panel.useAngleMean : false;
@@ -232,6 +238,7 @@ System.register(['app/plugins/sdk', 'lodash', 'moment', '../css/leaflet.css!', '
                         var chartRadius = ctrl.panel.circleRadius;
 
                         function drawBackground() {
+                            context.lineWidth = 1;
                             context.strokeStyle = "#000000";
                             context.beginPath();
                             context.arc(center.x, center.y, chartRadius, 0, 2 * Math.PI);
@@ -295,6 +302,8 @@ System.register(['app/plugins/sdk', 'lodash', 'moment', '../css/leaflet.css!', '
                             var x = r * Math.cos(t);
                             var y = r * Math.sin(t);
 
+                            context.lineWidth = 1;
+
                             context.beginPath();
                             context.moveTo(center.x, center.y);
                             context.lineTo(center.x + x, center.y - y);
@@ -302,6 +311,8 @@ System.register(['app/plugins/sdk', 'lodash', 'moment', '../css/leaflet.css!', '
                         }
 
                         function drawCircle(r) {
+                            context.lineWidth = 1;
+
                             context.beginPath();
                             context.arc(center.x, center.y, r, 0, 2 * Math.PI);
                             context.stroke();
@@ -312,10 +323,11 @@ System.register(['app/plugins/sdk', 'lodash', 'moment', '../css/leaflet.css!', '
                             angle = angle - 90;
                             var radians = angle * (Math.PI / 180);
 
-                            var headlen = 5; // length of head in pixels
+                            var headlen = 10; // length of head in pixels
                             var x = chartRadius * Math.cos(radians) + center.x;
                             var y = chartRadius * Math.sin(radians) + center.y;
 
+                            context.lineWidth = 5;
                             context.strokeStyle = "#000000";
                             context.beginPath();
                             context.moveTo(center.x, center.y);
@@ -327,6 +339,8 @@ System.register(['app/plugins/sdk', 'lodash', 'moment', '../css/leaflet.css!', '
                         }
 
                         function drawMagCircle(magnitude) {
+                            context.lineWidth = 1;
+
                             context.strokeStyle = "#FFFF00";
                             context.beginPath();
                             context.arc(center.x, center.y, chartRadius * (magnitude / 2), 0, 2 * Math.PI);
@@ -335,7 +349,9 @@ System.register(['app/plugins/sdk', 'lodash', 'moment', '../css/leaflet.css!', '
                             context.fill();
                         }
 
-                        function drawLine(angle, color) {
+                        function drawLine(angle, color, width) {
+                            context.lineWidth = width;
+
                             angle = angle - 90;
                             var radians = angle * (Math.PI / 180);
 
@@ -353,9 +369,10 @@ System.register(['app/plugins/sdk', 'lodash', 'moment', '../css/leaflet.css!', '
                         drawGrid();
                         drawMagCircle(data.magvalue);
 
-                        drawAngleArrow(data.anglevalue);
-                        drawLine(data.minanglevalue, "#FF0000");
-                        drawLine(data.maxanglevalue, "#FF0000");
+                        if (ctrl.panel.showMinAngle) drawLine(data.minanglevalue, "#FF0000", ctrl.panel.minAngleMarkerWidth);
+                        if (ctrl.panel.showMaxAngle) drawLine(data.maxanglevalue, "#FF0000", ctrl.panel.maxAngleMarkerWidth);
+                        drawLine(data.anglevalue, "#000000", ctrl.panel.angleMarkerWidth);
+
                         //if (phasor.angleMean)
                         //    drawAverageLine(phasor.angleMean);
                     }
