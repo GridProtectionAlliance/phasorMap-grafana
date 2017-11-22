@@ -393,7 +393,10 @@ System.register(['app/plugins/sdk', 'lodash', 'moment', '../css/leaflet.css!', '
                                 html: '<canvas width="' + 2 * r + '" height="' + 2 * r + '" style="position:relative; top:-' + (r - 5) + 'px;left:-' + (r - 5) + 'px"></canvas>',
                                 iconSize: [12, 12]
                             });
-                            var circle = L.marker([element.latitude, element.longitude], { icon: divIcon });
+                            var circle = L.marker([element.latitude, element.longitude], { icon: divIcon }).on('click', function (event) {
+                                console.log(element);
+                                var popup = window.open("http://localhost:3000/dashboard/db/templatephasor?var-Angle=" + encodeURIComponent(element.anglepointtag) + "&var-Magnitude=" + encodeURIComponent(element.magpointtag), "_blank");
+                            });
                             ctrl.$scope.circleMarkers.push(circle);
                             circle.addTo(ctrl.$scope.mapContainer);
                             ctrl.updatePhasorChart(circle._icon, element);
