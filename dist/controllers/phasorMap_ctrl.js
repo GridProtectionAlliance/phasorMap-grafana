@@ -400,11 +400,18 @@ System.register(['app/plugins/sdk', 'lodash', 'moment', '../css/leaflet.css!', '
 
                             if (element.tolongitude != "" && element.tolatitude != "") {
                                 var line;
-                                if (element.powervalue >= 0) line = L.polyline([[element.latitude, element.longitude], [element.tolatitude, element.tolongitude]], { color: 'red' });else line = L.polyline([[element.tolatitude, element.tolongitude], [element.latitude, element.longitude]], { color: 'red' });
+                                if (element.powervalue >= 0) line = L.polyline([[element.latitude, element.longitude], [element.tolatitude, element.tolongitude]], { color: 'red' }).on('click', function (event) {
+                                    console.log(element);
+                                    var popup = window.open("http://localhost:3000/dashboard/db/templating?var-AngleA=" + encodeURIComponent(element.anglepointtag) + "&var-AngleB=" + encodeURIComponent(element.toanglepointtag) + "&var-LineMW=" + encodeURIComponent(element.powerpointtag), "_blank");
+                                });else line = L.polyline([[element.tolatitude, element.tolongitude], [element.latitude, element.longitude]], { color: 'red' }).on('click', function (event) {
+                                    console.log(element);
+                                    var popup = window.open("http://localhost:3000/dashboard/db/templating?var-AngleA=" + encodeURIComponent(element.anglepointtag) + "&var-AngleB=" + encodeURIComponent(element.toanglepointtag) + "&var-LineMW=" + encodeURIComponent(element.powerpointtag), "_blank");
+                                });
 
                                 var decorator = L.polylineDecorator(line, {
                                     patterns: [{ offset: '60%', repeat: 0, symbol: L.Symbol.arrowHead({ pixelSize: 15, pathOptions: { color: 'red', fillOpacity: 1, weight: 0 } }) }]
                                 });
+
                                 ctrl.$scope.circleMarkers.push(line);
                                 ctrl.$scope.circleMarkers.push(decorator);
 
