@@ -357,7 +357,7 @@ export class PhasorMapCtrl extends MetricsPanelCtrl{
                 iconSize: [12, 12]
             });
             var circle = L.marker([element.latitude, element.longitude], { icon: divIcon }).on('click', function (event) {
-                var popup = window.open("http://localhost:3000/dashboard/db/templatephasor?var-Angle=" + encodeURIComponent(element.anglepointtag) + "&var-Magnitude=" + encodeURIComponent(element.magpointtag) + "&from=" + ctrl.dashboard.time.from + "&to=" + ctrl.dashboard.time.to + "&refresh=" + ctrl.dashboard.refresh, "_blank");
+                var popup = window.open("http://localhost:3000/dashboard/db/templatephasor?var-Angle=" + encodeURIComponent(element.anglepointtag) + "&var-Magnitude=" + encodeURIComponent(element.magpointtag) + "&from=" + ctrl.dashboard.time.from + "&to=" + ctrl.dashboard.time.to + (ctrl.dashboard.refresh ? "&refresh=" + ctrl.dashboard.refresh: ""), "_blank");
             });
             ctrl.$scope.circleMarkers.push(circle);
             circle.addTo(ctrl.$scope.mapContainer);
@@ -367,11 +367,11 @@ export class PhasorMapCtrl extends MetricsPanelCtrl{
                 var line;
                 if(element.powervalue >= 0)
                     line = L.polyline([[element.latitude, element.longitude], [element.tolatitude, element.tolongitude]], { color: 'red' }).on('click', function (event) {
-                        var popup = window.open("http://localhost:3000/dashboard/db/templating?var-AngleA=" + encodeURIComponent(element.anglepointtag) + "&var-AngleB=" + encodeURIComponent(element.toanglepointtag) + "&var-LineMW=" + encodeURIComponent(element.powerpointtag) + "&from=" + ctrl.dashboard.time.from + "&to=" + ctrl.dashboard.time.to + "&refresh=" + ctrl.dashboard.refresh, "_blank");
+                        var popup = window.open("http://localhost:3000/dashboard/db/templating?var-AngleA=" + encodeURIComponent(element.anglepointtag) + "&var-AngleB=" + encodeURIComponent(element.toanglepointtag) + "&var-LineMW=" + encodeURIComponent(element.powerpointtag) + "&from=" + ctrl.dashboard.time.from + "&to=" + ctrl.dashboard.time.to + (ctrl.dashboard.refresh ? "&refresh=" + ctrl.dashboard.refresh : ""), "_blank");
                     });
                 else
                     line = L.polyline([[element.tolatitude, element.tolongitude], [element.latitude, element.longitude]], { color: 'red' }).on('click', function (event) {
-                        var popup = window.open("http://localhost:3000/dashboard/db/templating?var-AngleA=" + encodeURIComponent(element.anglepointtag) + "&var-AngleB=" + encodeURIComponent(element.toanglepointtag) + "&var-LineMW=" + encodeURIComponent(element.powerpointtag) + "&from=" + ctrl.dashboard.time.from + "&to=" + ctrl.dashboard.time.to + "&refresh=" + ctrl.dashboard.refresh, "_blank");
+                        var popup = window.open("http://localhost:3000/dashboard/db/templating?var-AngleA=" + encodeURIComponent(element.anglepointtag) + "&var-AngleB=" + encodeURIComponent(element.toanglepointtag) + "&var-LineMW=" + encodeURIComponent(element.powerpointtag) + "&from=" + ctrl.dashboard.time.from + "&to=" + ctrl.dashboard.time.to + (ctrl.dashboard.refresh ? "&refresh=" + ctrl.dashboard.refresh : ""), "_blank");
                     });
 
                 var decorator = L.polylineDecorator(line, {
