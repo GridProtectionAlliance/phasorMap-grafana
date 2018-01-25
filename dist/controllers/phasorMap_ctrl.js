@@ -83,6 +83,7 @@ System.register(['app/plugins/sdk', 'lodash', 'moment', '../css/leaflet.css!', '
                     _this.events.on('refresh', _this.onRefresh.bind(_this));
 
                     // Variables for options
+                    _this.panel.height = _this.panel.height != undefined ? _this.panel.height : _this.row.height;
                     _this.panel.mapBackgrounds = Object.keys(TileServers);
                     _this.panel.mapBackground = _this.panel.mapBackground != undefined ? _this.panel.mapBackground : _this.panel.mapBackgrounds[0];
                     _this.panel.maxZoom = TileServers[_this.panel.mapBackground].options.maxZoom;
@@ -99,6 +100,7 @@ System.register(['app/plugins/sdk', 'lodash', 'moment', '../css/leaflet.css!', '
                     _this.panel.maxAngleMarkerWidth = _this.panel.maxAngleMarkerWidth != undefined ? _this.panel.maxAngleMarkerWidth : 1;
                     _this.panel.showMinAngle = _this.panel.showMinAngle != undefined ? _this.panel.showMinAngle : true;
                     _this.panel.showMaxAngle = _this.panel.showMaxAngle != undefined ? _this.panel.showMaxAngle : true;
+                    _this.panel.showMagCircle = _this.panel.showMagCircle != undefined ? _this.panel.showMagCircle : true;
 
                     _this.panel.useReferenceValue = _this.panel.useReferenceValue != undefined ? _this.panel.useReferenceValue : false;
                     _this.panel.referencePointTag = _this.panel.referencePointTag != undefined ? _this.panel.referencePointTag : '';
@@ -367,8 +369,7 @@ System.register(['app/plugins/sdk', 'lodash', 'moment', '../css/leaflet.css!', '
 
                         drawBackground();
                         drawGrid();
-                        drawMagCircle(data.magvalue);
-
+                        if (ctrl.panel.showMagCircle) drawMagCircle(data.magvalue);
                         if (ctrl.panel.showMinAngle) drawLine(data.minanglevalue, "#FF0000", ctrl.panel.minAngleMarkerWidth);
                         if (ctrl.panel.showMaxAngle) drawLine(data.maxanglevalue, "#FF0000", ctrl.panel.maxAngleMarkerWidth);
                         drawLine(data.anglevalue, "#000000", ctrl.panel.angleMarkerWidth);

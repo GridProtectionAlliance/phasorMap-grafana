@@ -44,6 +44,7 @@ export class PhasorMapCtrl extends MetricsPanelCtrl{
         this.events.on('refresh', this.onRefresh.bind(this));
         
         // Variables for options
+        this.panel.height = (this.panel.height != undefined ? this.panel.height : this.row.height)
         this.panel.mapBackgrounds = Object.keys(TileServers);
         this.panel.mapBackground  = (this.panel.mapBackground != undefined ? this.panel.mapBackground : this.panel.mapBackgrounds[0]);
         this.panel.maxZoom        = TileServers[this.panel.mapBackground].options.maxZoom;
@@ -60,6 +61,7 @@ export class PhasorMapCtrl extends MetricsPanelCtrl{
         this.panel.maxAngleMarkerWidth = (this.panel.maxAngleMarkerWidth != undefined ? this.panel.maxAngleMarkerWidth : 1);  
         this.panel.showMinAngle = (this.panel.showMinAngle != undefined ? this.panel.showMinAngle : true);
         this.panel.showMaxAngle = (this.panel.showMaxAngle != undefined ? this.panel.showMaxAngle : true);
+        this.panel.showMagCircle = (this.panel.showMagCircle != undefined ? this.panel.showMagCircle : true);
 
         this.panel.useReferenceValue = (this.panel.useReferenceValue != undefined ? this.panel.useReferenceValue : false);
         this.panel.referencePointTag = (this.panel.referencePointTag != undefined ? this.panel.referencePointTag : '');  
@@ -328,8 +330,7 @@ export class PhasorMapCtrl extends MetricsPanelCtrl{
 
         drawBackground();
         drawGrid();
-        drawMagCircle(data.magvalue);
-
+        if (ctrl.panel.showMagCircle) drawMagCircle(data.magvalue);
         if(ctrl.panel.showMinAngle) drawLine(data.minanglevalue, "#FF0000", ctrl.panel.minAngleMarkerWidth);
         if(ctrl.panel.showMaxAngle) drawLine(data.maxanglevalue, "#FF0000", ctrl.panel.maxAngleMarkerWidth);
         drawLine(data.anglevalue, "#000000", ctrl.panel.angleMarkerWidth);
@@ -371,7 +372,7 @@ export class PhasorMapCtrl extends MetricsPanelCtrl{
                     });
                 else
                     line = L.polyline([[element.tolatitude, element.tolongitude], [element.latitude, element.longitude]], { color: 'red' }).on('click', function (event) {
-                        var popup = window.open("http://localhost:3000/dashboard/db/templating?var-AngleA=" + encodeURIComponent(element.anglepointtag) + "&var-AngleB=" + encodeURIComponent(element.toanglepointtag) + "&var-LineMW=" + encodeURIComponent(element.powerpointtag) + "&from=" + ctrl.dashboard.time.from + "&to=" + ctrl.dashboard.time.to + (ctrl.dashboard.refresh ? "&refresh=" + ctrl.dashboard.refresh : ""), "_blank");
+                        var popup = window.open("http://localhost:3000/dashboard/db/templating?var-AngleA=" + encodeURIComponent(element.anglepointtag) + "&var-AngleB=" + encodeURIComponent(element.toanglepointtag) + "&var-LineMW=" + encodeURIComponent(element.powerpointtag) + "&from=" + ctrl.dashboard.time.from + "&to=" + ctrl.dashboard.time.to + (ctrl.dashboard.refresh ? "&refresh=" + ctrl.dashboard.refresh: ""), "_blank");
                     });
 
                 var decorator = L.polylineDecorator(line, {
